@@ -256,7 +256,6 @@
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI";
-    import {regular} from "@/modules/backend";
     import SelectBaseBusinessDialog from "./orgBusinessType-baseBusinessTypeDialog";
 
     export default {

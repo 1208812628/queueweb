@@ -6,9 +6,6 @@ import enLocale from './en/index.js';
 import zhLocale from './zh/index.js';
 import axios from 'axios';
 
-/* 导入上海农商行国际化文件 */
-import {backend_en} from '@/modules/backend';// 英文
-import {backend_zh} from '@/modules/backend';// 中文
 
 Vue.use(VueI18n)
 
@@ -16,12 +13,10 @@ const messages = {
   en: {
     ...enLocale,
     ...elementEnLocale,
-    ...backend_en
   },
   zh: {
     ...zhLocale,
     ...elementZhLocale,
-    ...backend_zh,
   }
 }
 

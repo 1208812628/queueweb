@@ -1,4 +1,4 @@
-<script src="../index.js"></script>
+<script src="../../index.js"></script>
 <template>
     <div class="gwi-module-container">
         <!-- 查询条件 -->
@@ -163,7 +163,7 @@
 <script>
     import {systemSetting} from "../../../api/modules/systemSetting"; // API接口
     import topic from "../../../api/modules/topic";
-    import {dateFormat} from "@/modules/backend"; // 工具类
+    import {dateFormat} from "@/util/util.js";// 工具类
     import store from '@/store';
 
     export default {

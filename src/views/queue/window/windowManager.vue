@@ -439,8 +439,6 @@
 </script>
 
 <style scoped lang="scss">
-    @import "../../../assets/css/max-inbodyTree-style.css";
-
     .main-top {
         margin: 0;
         border-bottom: #F2F6FC solid 1px;

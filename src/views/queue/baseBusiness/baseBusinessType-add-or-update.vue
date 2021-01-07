@@ -146,7 +146,6 @@
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI";
-    import {regular} from "@/modules/backend";
 
     export default {
         name: "baseBusinessTypeAddOrUpdate",

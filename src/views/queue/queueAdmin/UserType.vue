@@ -104,7 +104,7 @@
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI"; // API接口
-    import {regular} from "@/modules/backend";
+    import {regular} from "@gwi/bi-common";
 
     export default {
         name: "UserType",
@@ -140,7 +140,6 @@
                 dialogRules: { // 表单规则验证规则
                     factorCode: [
                         {required: true, message: this.$t('queue.queue.msg.validate_user_factorCode'), trigger: 'blur'}, // 非空验证
-                        {pattern: regular.enNumberLine, message: regular.enNumberLineMsg, trigger: ['blur', 'change']},
                     ],
                     factorName: [
                         {required: true, message: this.$t('queue.queue.msg.validate_user_factorName'), trigger: 'blur'}, // 非空验证
@@ -346,11 +345,11 @@
 </script>
 
 <style lang="scss" scoped>
-    .main-top /deep/ .el-form-item__label {
+    .main-top ::v-deep .el-form-item__label {
         font-size: 12px !important;
     }
 
-    .main-bottom /deep/ .el-table--mini td, .el-table--mini th {
+    .main-bottom ::v-deep .el-table--mini td, .el-table--mini th {
         padding: 3px 0;
     }
 

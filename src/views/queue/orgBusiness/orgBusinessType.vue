@@ -83,8 +83,7 @@
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI";
-    import {dateFormat} from "@/modules/backend";
-
+    import {util} from "@gwi/bi-common";
     import AddOrUpdate from "./orgBusinessType-add-or-update";
     import BusinessSync from "./orgBusinessType-sync"
 
@@ -204,7 +203,7 @@
             // 格式化日期
             formatDate(row, column, cellValue, index) {
                 cellValue = new Date(cellValue);
-                return dateFormat('HH:mm:ss', cellValue);
+                return util.dateFormat('HH:mm:ss', cellValue);
             },
         }
 

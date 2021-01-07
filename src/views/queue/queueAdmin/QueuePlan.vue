@@ -66,8 +66,7 @@
 
 <script>
     import {systemSetting} from "../../../api/modules/systemSetting";
-    import store from '@/store';
-    import {findAllChildren, findParentId, queryGradeNode, findOrgParentId} from "@/modules/backend";
+    import {util} from "@gwi/bi-common";
     import OrgBusiness from "../orgBusiness/orgBusinessType";
     import MediaScreen from "../mediaScreen/mediaScreenManager";
     import WindowManager from "../window/windowManager";
@@ -114,7 +113,7 @@
         },
         methods:{
             init(){
-                this.currentOrg = store.getters.userInfo.orgId;
+                this.currentOrg = this.store.getters.userInfo.orgId;
                 this.requestGet(this.currentOrg,systemSetting.getOrg).then(data=>{
                     this.currentClassify = data.context.orgClassify;
                     this.visible1 = true;
@@ -122,14 +121,14 @@
                 })
             },
             createTree() {
-                this.requestVO({"downOrgId": [store.getters.userInfo.orgId]}, systemSetting.listOrg).then(data => {
+                this.requestVO({"downOrgId": [this.store.getters.userInfo.orgId]}, systemSetting.listOrg).then(data => {
                     let context = data.context;
                     let treeDataTmp = [];
-                    let root = findOrgParentId(context); // 最上层的根元素
+                    let root = util.findOrgParentId(context); // 最上层的根元素
                     if (root !== null) {
                         treeDataTmp.push(root);
                         console.log("机构的顶级目录:", treeDataTmp);
-                        findAllChildren(treeDataTmp[0], context, "parentId", "id");
+                        util.findAllChildren(treeDataTmp[0], context, "parentId", "id");
                         console.log("整理后的树状结构菜单是:", treeDataTmp);
                         this.treeData = treeDataTmp;
                     }
