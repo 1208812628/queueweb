@@ -638,15 +638,15 @@
     }
 </script>
 <style lang="scss" scoped>
-    .main-top /deep/ .el-form-item__label {
+    .main-top ::v-deep .el-form-item__label {
         font-size: 12px !important;
     }
 
-    .main-bottom /deep/ .el-table--mini td, .el-table--mini th {
+    .main-bottom ::v-deep .el-table--mini td, .el-table--mini th {
         padding: 3px 0;
     }
 
-    .check /deep/ .el-checkbox{
+    .check ::v-deep .el-checkbox{
         width: 100px;
     }
 </style>

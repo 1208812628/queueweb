@@ -1,4 +1,3 @@
-<script src="../../index.js"></script>
 <template>
     <div class="gwi-module-container">
         <!-- 查询条件 -->
@@ -163,7 +162,7 @@
 <script>
     import {systemSetting} from "../../../api/modules/systemSetting"; // API接口
     import topic from "../../../api/modules/topic";
-    import {dateFormat} from "@/util/util.js";// 工具类
+    import {util} from "@/gwi/bi";// 工具类
     import store from '@/store';
 
     export default {
@@ -176,11 +175,11 @@
                 dataForm: {
                     orgId: store.getters.userInfo.orgId,
                     radioFlag: undefined,
-                    year: dateFormat("yyyy", new Date()),
+                    year: util.dateFormat("yyyy", new Date()),
                     yearList: [
-                        {itemCode: dateFormat("yyyy", new Date()) - 2, itemName: dateFormat("yyyy", new Date()) - 2},// 前年
-                        {itemCode: dateFormat("yyyy", new Date()) - 1, itemName: dateFormat("yyyy", new Date()) - 1},// 去年
-                        {itemCode: dateFormat("yyyy", new Date()), itemName: dateFormat("yyyy", new Date())}         // 当年
+                        {itemCode: util.dateFormat("yyyy", new Date()) - 2, itemName: util.dateFormat("yyyy", new Date()) - 2},// 前年
+                        {itemCode: util.dateFormat("yyyy", new Date()) - 1, itemName: util.dateFormat("yyyy", new Date()) - 1},// 去年
+                        {itemCode: util.dateFormat("yyyy", new Date()), itemName: util.dateFormat("yyyy", new Date())}         // 当年
                     ],
                     quarter: 1,
                     quarterList: [
@@ -1077,7 +1076,7 @@
         float: right;
     }
 
-    .report-box /deep/ .el-progress-bar__outer {
+    .report-box ::v-deep .el-progress-bar__outer {
         background-color: #52d997 !important;
     }
 

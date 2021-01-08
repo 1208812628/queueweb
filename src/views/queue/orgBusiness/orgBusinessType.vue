@@ -215,13 +215,13 @@
         margin: 0 !important;
         border-bottom: #F2F6FC solid 1px;
     }
-    .main-top /deep/ .el-form-item__label {
+    .main-top ::v-deep .el-form-item__label {
         font-size: 12px !important;
     }
-    .main-bottom /deep/ .el-table--mini td, .el-table--mini th {
+    .main-bottom ::v-deep .el-table--mini td, .el-table--mini th {
         padding: 3px 0;
     }
-    /deep/.el-table{
+    ::v-deep .el-table{
         WORD-WRAP: break-word;
         TABLE-LAYOUT: fixed;
         word-break:break-all

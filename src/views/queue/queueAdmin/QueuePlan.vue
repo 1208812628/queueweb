@@ -72,6 +72,7 @@
     import WindowManager from "../window/windowManager";
     import OrgAppoint from "../orgAppointment/orgAppointmentStrategy";
     import OrgTake from "../orgTake/orgTakeSlip";
+    import store from "@/store";
 
     export default {
         name: "QueuePlan",
@@ -113,7 +114,7 @@
         },
         methods:{
             init(){
-                this.currentOrg = this.store.getters.userInfo.orgId;
+                this.currentOrg = store.getters.userInfo.orgId;
                 this.requestGet(this.currentOrg,systemSetting.getOrg).then(data=>{
                     this.currentClassify = data.context.orgClassify;
                     this.visible1 = true;
@@ -121,7 +122,7 @@
                 })
             },
             createTree() {
-                this.requestVO({"downOrgId": [this.store.getters.userInfo.orgId]}, systemSetting.listOrg).then(data => {
+                this.requestVO({"downOrgId": [store.getters.userInfo.orgId]}, systemSetting.listOrg).then(data => {
                     let context = data.context;
                     let treeDataTmp = [];
                     let root = util.findOrgParentId(context); // 最上层的根元素
@@ -267,7 +268,7 @@
         float: right;
         margin-right: 20px;
     }
-    /deep/ .el-step__title {
+    ::v-deep .el-step__title {
         font-size: 13px;
         line-height: 30px;
     }

@@ -198,7 +198,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .main-top /deep/ .el-form-item__label {
+    .main-top ::v-deep .el-form-item__label {
         font-size: 12px !important;
     }
 
@@ -251,7 +251,7 @@
         margin-bottom: 20px;
     }
 
-    /deep/ .el-input__inner {
+    ::v-deep .el-input__inner {
         padding: 0 0 0 10px !important;
     }
 </style>

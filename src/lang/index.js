@@ -21,20 +21,20 @@ const messages = {
 }
 
 const i18n = new VueI18n({
-  locale: 'en',
+  locale: 'zh',
   messages
 });
 
 const loadedLanguages = {}; // 我们的预装默认语言
 
-function setI18nLanguage(lang = 'cn') {
+function setI18nLanguage(lang = 'zh') {
   i18n.locale = lang;
 	axios.defaults.headers.common['Accept-Language'] = lang;
   document.querySelector('html').setAttribute('lang', lang);
 	return lang;
 }
 
-export function loadLanguageAsync(lang = 'cn') {
+export function loadLanguageAsync(lang = 'zh') {
 	let langData = loadedLanguages[lang];
 		if (!langData) {
 			return import(/* webpackChunkName: "lang-[request]" */ `@/lang/${lang}/index.js`).then(msgs => {
@@ -48,6 +48,6 @@ export function loadLanguageAsync(lang = 'cn') {
 		}
 }
 
-loadLanguageAsync('en');
+loadLanguageAsync('zh');
 
 export default i18n;

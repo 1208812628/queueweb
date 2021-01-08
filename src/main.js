@@ -3,21 +3,30 @@ import initRoute from "./router";
 import "./public-path";
 import biCommon from '@gwi/bi-common';
 
+import Vue from 'vue';
+
 console.log("bicommon", biCommon)
 
 import '@gwi/bi-common/lib/bi-common.css';
 import langRes from '@/lang';
+import i18n from '@/lang';
 
 import store from '@/store';
 import Vuex from "vuex";
 
-const VueSet = biCommon.initVue(langRes);
-const Vue = VueSet.Vue;
+import ElementUI from 'element-ui';
+
+// const VueSet = biCommon.initVue(langRes);
+// const Vue = VueSet.Vue;
 Vue.use(biCommon);
 
-console.log('biCommon i18n', VueSet.i18n);
+// console.log('biCommon i18n', VueSet.i18n);
 
 Vue.use(Vuex);
+Vue.use(ElementUI, {
+  size: 'mini', // set element-ui default size
+  i18n: (key, value) => i18n.t(key, value)
+});
 
 Vue.config.productionTip = false;
 
@@ -54,7 +63,7 @@ async function render(props) {
   // 挂载应用
   instance = new Vue({
     router,
-    i18n: VueSet.i18n,
+    i18n,
     store,
     render: (h) => {
       return h(biCommon.components.AppContainer, {

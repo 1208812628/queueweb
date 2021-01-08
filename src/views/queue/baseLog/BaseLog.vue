@@ -78,6 +78,7 @@
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI"; // API接口
+    import store from "@/store"
 
     export default {
         name: "BaseLog",
@@ -85,7 +86,7 @@
             return {
                 // 搜索框的值
                 searchInfo: {
-                    orgId: this.store.getters.userInfo.orgId,
+                    orgId: store.getters.userInfo.orgId,
                     queueType:'',
                     startTime: '',
                     endTime: '',
@@ -96,7 +97,7 @@
                 },
                 // 搜索机构树
                 searchOrgInfo: {
-                    downOrgId: [this.store.getters.userInfo.orgId]
+                    downOrgId: [store.getters.userInfo.orgId]
                 },
                 // 列表的数据
                 tableData: [],
@@ -116,7 +117,7 @@
                 this.search();
             },
             resetQuery(){
-                this.searchInfo.orgId = this.store.getters.userInfo.orgId;
+                this.searchInfo.orgId = store.getters.userInfo.orgId;
                 this.searchInfo.queueType = undefined;
                 this.searchInfo.startTime = undefined;
                 this.searchInfo.endTime = undefined;
@@ -125,7 +126,7 @@
             search() {
                 this.loading=true;
                 if(!this.searchInfo.orgId){
-                    this.searchInfo.orgId = this.store.getters.userInfo.orgId;
+                    this.searchInfo.orgId = store.getters.userInfo.orgId;
                 }
                 this.requestVO(this.searchInfo, queueManageAPI.selectLog).then(data => {
                         this.loading=false;
@@ -158,11 +159,11 @@
 </script>
 
 <style lang="scss" scoped>
-    .main-top /deep/ .el-form-item__label {
+    .main-top ::v-deep .el-form-item__label {
         font-size: 12px !important;
     }
 
-    .main-bottom /deep/ .el-table--mini td, .el-table--mini th {
+    .main-bottom ::v-deep .el-table--mini td, .el-table--mini th {
         padding: 3px 0;
     }
 
