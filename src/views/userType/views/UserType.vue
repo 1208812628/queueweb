@@ -1,110 +1,24 @@
 <template>
-    <div class="gwi-module-container">
-        <div class="main-top">
-            <el-form :inline="true" ref="searchInfo" :model="searchInfo" size="mini">
-                <el-row>
-                    <el-form-item :label="$t('queue.queue.label.typeCode')" prop="factorCode">
-                        <el-input v-model="searchInfo.factorCode" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item :label="$t('queue.queue.label.typeName')"  prop="factorName">
-                        <el-input v-model="searchInfo.factorName" clearable></el-input>
-                    </el-form-item>
-
-                    <el-form-item>
-                        <el-button @click="query" type="primary">{{$t("queue.common.button.query")}}</el-button>
-                        <el-button @click="resetQuery" type="primary">{{$t("queue.common.button.reset")}}</el-button>
-                    </el-form-item>
-                </el-row>
-            </el-form>
-        </div>
-        <div class="main-bottom">
-            <div class="btn-container">
-                <el-button size="mini" type="primary" icon="el-icon-plus" @click="toAdd" plain>{{$t('queue.common.button.add')}}</el-button>
+    <gwi-ui-list-page-container>
+        <gwi-ui-table-view :columns-define="fieldsDefine" :show-columns="dShowColumns"
+                           lang-url="queue.userType.columns" :column-res="fieldsI18nRes" :dict-res="dictI18nRes"
+                           :datas="tableData" @link-click="linkClick" :params.sync="productQueryParams" has-filter>
+            <div slot="filter">
+                <el-input v-model="productQueryParams.factorName" placeholder="请输入客户名" style="width:200px;"/>
             </div>
-            <!-- 列表 -->
-            <div class="table-container">
-                <el-table :data="tableData" border size="mini" v-loading="loading" :element-loading-text="$t('queue.queue.msg.load')">
-                    <el-table-column type="index" :label="$t('queue.common.label.serialNumber')" :index="tableIndex" align="center" width="50">
-                    </el-table-column>
-                    <el-table-column prop="factorCode" :label="$t('queue.userType.columns.factorCode.name')" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="factorName" :label="$t('queue.queue.label.typeName')" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="numberPrefix" :label="$t('queue.queue.label.numberPrefix')" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="priority" :label="$t('queue.queue.label.priority')" show-overflow-tooltip></el-table-column>
-                    <el-table-column prop="overTime" :label="$t('queue.queue.label.overTime')" show-overflow-tooltip></el-table-column>
-<!--                    <el-table-column prop="numberLength" label="叫号长度" show-overflow-tooltip></el-table-column>-->
-<!--                    <el-table-column prop="disabledText" label="启用状态" show-overflow-tooltip></el-table-column>-->
-                    <el-table-column :label="$t('queue.common.label.operation')" fixed="right" width="180">
-                        <template slot-scope="scope">
-                            <el-button type="text" size="small" @click="toModify(scope.row.id)" >{{$t('queue.common.button.edit')}}</el-button>
-                            <el-button type="text" size="small" @click="doDelete(scope.row, scope.$index)" >{{$t('queue.common.button.delete')}}</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-            <!-- 分页 -->
-            <div class="pagination-container">
-                <el-pagination background layout="total, prev, pager, next,jumper" :page-size="searchInfo.pageSize" :total="searchInfo.total"
-                               @current-change="currentChange" :current-page="searchInfo.pageNum">
-                </el-pagination>
-            </div>
-        </div>
-
-        <!-- 添加/修改 -->
-        <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" width="50%" @close="dialogClose"
-                   class="gwi-dialog" center v-el-drag-dialog :close-on-click-modal="false" :append-to-body="true" top="20px">
-            <el-form :inline="false" :model="dialogFormInfo" ref="dialogFormInfo" :rules="dialogRules"
-                     :status-icon="true" :inline-message="true" label-position="right" label-width="140px"
-                     size="mini" class="dialog-form">
-                <el-form-item :label="$t('queue.queue.label.typeCode')" prop="factorCode">
-                    <el-input type="text" v-model="dialogFormInfo.factorCode" maxlength="30" minlength="1" clearable
-                              :placeholder="$t('queue.common.placeholder.input')" :readonly="this.dialogUpdateFlag" :disabled = "this.dialogUpdateFlag">
-                    </el-input>
-                </el-form-item>
-                <el-form-item :label="$t('queue.queue.label.typeName')" prop="factorName">
-                    <el-input type="text" v-model="dialogFormInfo.factorName" maxlength="30" minlength="1"
-                              :placeholder="$t('queue.common.placeholder.input')" clearable>
-                    </el-input>
-                </el-form-item>
-                <el-form-item :label="$t('queue.queue.label.priority')" prop="priority">
-                    <el-select size="mini" v-model="dialogFormInfo.priority"
-                              :placeholder="$t('queue.queue.msg.priority')" clearable>
-                        <el-option v-for="item in priorityList" :key="item.value" :value="item.value" :label="item.name"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item :label="$t('queue.queue.label.numberPrefix')" prop="numberPrefix">
-                    <el-input type="text" size="mini" v-model="dialogFormInfo.numberPrefix" maxlength="1"
-                              :placeholder="$t('queue.common.placeholder.input')" clearable>
-                    </el-input>
-                </el-form-item>
-                <el-form-item :label="$t('queue.queue.label.overTime')" prop="overTime">
-                    <el-select size="mini" v-model="dialogFormInfo.overTime"
-                               :placeholder="$t('queue.queue.msg.overTime')" clearable>
-                        <el-option v-for="item in overTimeList" :key="item.value" :value="item.value" :label="item.name"></el-option>
-                    </el-select>
-                </el-form-item>
-
-<!--                <el-form-item label="叫号长度：" prop="numberLength">-->
-<!--                    <el-input type="text" size="mini" v-model="dialogFormInfo.numberLength" maxlength="1"-->
-<!--                              :placeholder="$t('placeholder.input')">-->
-<!--                    </el-input>-->
-<!--                </el-form-item>-->
-<!--                <el-form-item label="启用状态：" prop="disabled" v-if="!this.dialogUpdateFlag">-->
-<!--                    <el-select-dict code="isDisabled" v-model="dialogFormInfo.disabled" :clearable="false"-->
-<!--                                    :placeholder="$t('placeholder.selected')" filterable>-->
-<!--                    </el-select-dict>-->
-<!--                </el-form-item>-->
-            </el-form>
-            <div class="dialog-footer" slot="footer">
-                <el-button @click="cancelDialog">{{$t('queue.common.button.cancel')}}</el-button>
-                <el-button @click="submitDialog('dialogFormInfo')" type="primary">{{$t('queue.common.button.submit')}}</el-button>
-            </div>
-        </el-dialog>
-    </div>
+            <template slot-scope="scope" slot="tableAction">
+                <permission-buttons :actions="actions" :row-data="scope.row" size="small"
+                                    lang-url="queue.userType.actions" @action-click="actionClick">
+                </permission-buttons>
+            </template>
+        </gwi-ui-table-view>
+    </gwi-ui-list-page-container>
 </template>
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI"; // API接口
     import {regular} from "@gwi/bi-common";
+    import userType from '../cfg/userType.js';
 
     export default {
         name: "UserType",
@@ -121,8 +35,8 @@
             return {
                 // 搜索框的值
                 searchInfo: {
-                    factorCode:'',
-                    factorName:'',
+                    factorCode: '',
+                    factorName: '',
                     pageNum: 1,
                     start: 0,
                     pageSize: 10,
@@ -154,7 +68,11 @@
                     ],
                     numberPrefix: [
                         {required: false},
-                        {validator: checkBigEnglish, message: this.$t('queue.queue.msg.validate_bigLetter'), trigger: ['blur', 'change']},
+                        {
+                            validator: checkBigEnglish,
+                            message: this.$t('queue.queue.msg.validate_bigLetter'),
+                            trigger: ['blur', 'change']
+                        },
                     ],
                 },
                 priorityList: [
@@ -169,24 +87,30 @@
                     {value: '9', name: '9'},
                 ],
                 overTimeList: [
-                    {value: 10, name: '10'+this.$t('queue.common.label.minute')},
-                    {value: 20, name: '20'+this.$t('queue.common.label.minute')},
-                    {value: 30, name: '30'+this.$t('queue.common.label.minute')},
-                    {value: 40, name: '40'+this.$t('queue.common.label.minute')} ,
-                    {value: 50, name: '50'+this.$t('queue.common.label.minute')}  ,
-                    {value: 60, name: '60'+this.$t('queue.common.label.minute')}  ,
-                    {value: 70, name: '70'+this.$t('queue.common.label.minute')}  ,
-                    {value: 80, name: '80'+this.$t('queue.common.label.minute')}  ,
-                    {value: 90, name: '90'+this.$t('queue.common.label.minute')}  ,
+                    {value: 10, name: '10' + this.$t('queue.common.label.minute')},
+                    {value: 20, name: '20' + this.$t('queue.common.label.minute')},
+                    {value: 30, name: '30' + this.$t('queue.common.label.minute')},
+                    {value: 40, name: '40' + this.$t('queue.common.label.minute')},
+                    {value: 50, name: '50' + this.$t('queue.common.label.minute')},
+                    {value: 60, name: '60' + this.$t('queue.common.label.minute')},
+                    {value: 70, name: '70' + this.$t('queue.common.label.minute')},
+                    {value: 80, name: '80' + this.$t('queue.common.label.minute')},
+                    {value: 90, name: '90' + this.$t('queue.common.label.minute')},
                 ],
-                loading:false,
-                showSwitch:true,
+                loading: false,
+                showSwitch: true,
+                productQueryParams: {
+                    factorName: null
+                },
+                actions: [].concat(userType.Table_Actions),
+                dShowColumns: [].concat(userType.DEFAULT_SHOW_COLUMN),
+                fieldsDefine: userType.TABLE_COLUMNS_DEFINE,
             }
         },
         watch: {
             /* 清空表单 */
             dialogFormVisible(val) {
-                if (this.$refs.dialogFormInfo != undefined){
+                if (this.$refs.dialogFormInfo != undefined) {
                     this.$refs.dialogFormInfo.clearValidate();
                 }
             },
@@ -196,24 +120,36 @@
         },
         /* 事件 */
         methods: {
+            linkClick(row) {
+                // console.log(row);
+                this.$message({
+                    message: row,
+                    duration: 0,
+                    type: 'success',
+                    showClose: true
+                });
+            },
+            actionClick({command, rowData}) {
+                this.$emit('action-click', {command, rowData});
+            },
             query() {
                 this.searchInfo.pageNum = 1;
                 this.search();
             },
-            resetQuery(){
+            resetQuery() {
                 this.searchInfo.factorCode = undefined;
                 this.searchInfo.factorName = undefined;
             },
             // 点击查询按钮
             search() {
-                this.loading=true;
+                this.loading = true;
                 this.requestVO(this.searchInfo, queueManageAPI.selectUserType).then(data => {
-                        this.loading=false;
+                        this.loading = false;
                         this.tableData = data.context.list;
                         this.searchInfo.total = data.context.total;
                     }
                 ).catch(body => {
-                        this.loading=false;
+                        this.loading = false;
                         this.$msgInfoErrorCaller(body.stateMsg);
                     }
                 );
@@ -262,13 +198,17 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.showLoading();
-                        if(this.dialogFormInfo.numberPrefix){
+                        if (this.dialogFormInfo.numberPrefix) {
                             this.dialogFormInfo.numberPrefix = this.dialogFormInfo.numberPrefix.toUpperCase();
                         }
                         if (this.dialogUpdateFlag) {
                             this.requestVO(this.dialogFormInfo, queueManageAPI.updateUserType).then(body => {
                                 this.hideLoading();
-                                this.$notify({title: this.$t('queue.common.title.success'), message:  this.$t('queue.common.msg.edit_success'), type: 'success'});
+                                this.$notify({
+                                    title: this.$t('queue.common.title.success'),
+                                    message: this.$t('queue.common.msg.edit_success'),
+                                    type: 'success'
+                                });
                                 this.dialogFormInfo = {};
                                 this.dialogFormVisible = false;
                                 this.search();
@@ -279,7 +219,11 @@
                         } else {
                             this.requestVO(this.dialogFormInfo, queueManageAPI.addUserType).then(body => {
                                 this.hideLoading();
-                                this.$notify({title: this.$t('queue.common.title.success'), message:  this.$t('queue.common.msg.add_success'), type: 'success'});
+                                this.$notify({
+                                    title: this.$t('queue.common.title.success'),
+                                    message: this.$t('queue.common.msg.add_success'),
+                                    type: 'success'
+                                });
                                 this.dialogFormInfo = {};
                                 this.dialogFormVisible = false;
                                 this.search();
@@ -311,7 +255,7 @@
                             // 删除的是某页的第一条数据
                             let tmp = (index + 1) % this.searchInfo.pageSize;
                             if (tmp === 1) {
-                                this.searchInfo.pageNum --;
+                                this.searchInfo.pageNum--;
                             }
                         }
                         this.search();
@@ -327,10 +271,10 @@
             },
 
             // 启用
-            toStart(id){
+            toStart(id) {
                 let param = {
-                    'id':id,
-                    'disabled':'0'
+                    'id': id,
+                    'disabled': '0'
                 };
                 this.requestVO(param, queueManageAPI.updateUserType).then(body => {
                     this.$notify({title: this.$t('queue.common.title.success'), message: '启用成功', type: 'success'});
@@ -371,7 +315,7 @@
             width: 90%;
         }
 
-        .el-select--mini{
+        .el-select--mini {
             width: 90%;
         }
 

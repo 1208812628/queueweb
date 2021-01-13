@@ -3,22 +3,25 @@ import initRoute from "./router";
 import "./public-path";
 import biCommon from '@gwi/bi-common';
 
-import Vue from 'vue';
+// import Vue from 'vue';
 
 console.log("bicommon", biCommon)
 
 import '@gwi/bi-common/lib/bi-common.css';
-import langRes from '@/lang';
-import i18n from '@/lang';
+import langRes from './lang';
+import i18n from './lang';
 
 import store from '@/store';
 import Vuex from "vuex";
 
 import ElementUI from 'element-ui';
+import GwiUi from '@gwi/ui-pc'
+import '@gwi/ui-pc/lib/theme-default/index.css'
 
-// const VueSet = biCommon.initVue(langRes);
-// const Vue = VueSet.Vue;
+const VueSet = biCommon.initVue(langRes);
+const Vue = VueSet.Vue;
 Vue.use(biCommon);
+Vue.use(GwiUi);
 
 // console.log('biCommon i18n', VueSet.i18n);
 

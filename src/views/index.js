@@ -1,5 +1,5 @@
 export default {
-    userType: () => import('./queue/queueAdmin/UserType'), // 用户类型管理
+    userType: () => import('./userType/views/UserType'), // 用户类型管理
     baseBusinessType: () => import('./queue/baseBusiness/baseBusinessType'), // 基本业务类型管理
     orgBusinessType: () => import('./queue/orgBusiness/orgBusinessType'), // 网点业务类型管理
     takeSlipManage: () => import('./queue/orgTake/TakeSlipManage'), // 凭条管理
