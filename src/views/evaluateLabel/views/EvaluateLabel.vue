@@ -1,21 +1,21 @@
 <template>
     <div style="height: 600px;">
-        <cp-view lang-url="queue.userType.columns" :fields-define="fieldsDefine"
-                      :show-columns="showFields" :form-show-columns="formShowFields"
-                      :form-fields-define="formFieldsDefine" :actions="actions">
+        <cp-view lang-url="queue.evaluateLabel.columns" :fields-define="fieldsDefine"
+                 :show-columns="showFields" :form-show-columns="formShowFields"
+                 :form-fields-define="formFieldsDefine" :actions="actions">
         </cp-view>
     </div>
 </template>
 
 <script>
-    import CpView from "../components/CpUserType";
-    import cfg from '../cfg/userType.js';
+    import CpView from "../components/CpEvaluateLabel";
+    import cfg from '../cfg/evaluateLabel';
 
     export default {
+        name: "EvaluateLabel",
         components: {
             CpView
         },
-        name: "UserType",
         data() {
             return {
                 actions: [].concat(cfg.Table_Actions),
@@ -32,3 +32,7 @@
         methods: {}
     }
 </script>
+
+<style scoped>
+
+</style>

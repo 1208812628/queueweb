@@ -9,9 +9,5 @@ export default {
     actions:{
         edit:{name:'编辑'},
         delete:{name:'删除'},
-    },
-    configMenu:{
-        addNode:{name:'添加子菜单'},
-        addtResource:{name:'添加资源'}
     }
 };

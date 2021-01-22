@@ -1,12 +1,14 @@
 const TABLE_COLUMNS_DEFINE = {
-    factorCode: {field: 'factorCode'},
-    factorName: {field: 'factorName'},
-    numberPrefix:{field:'numberPrefix'},
-    priority: {field: 'priority'},
-    overTime: {field: 'overTime'}
+    baseBusinessName: {field: 'baseBusinessName'},
+    baseBusinessNameList: {field: 'baseBusinessNameList'},
+    baseBusinessCode:{field:'baseBusinessCode'},
+    businessInitialLetter: {field: 'businessInitialLetter'},
+    numberLength: {field: 'numberLength'},
+    customerTypeShow: {field: 'customerTypeShow'}
 };
 
-const DEFAULT_SHOW_COLUMN = ['factorCode', 'factorName', 'numberPrefix', 'priority', 'overTime'];
+const DEFAULT_SHOW_COLUMN = ['baseBusinessName', 'baseBusinessNameList', 'baseBusinessCode', 'businessInitialLetter',
+    'numberLength', 'customerTypeShow'];
 
 const FORM_COLUMNS_DEFINE = {
     factorCode: {field: 'factorCode', editType:'text', required:true},

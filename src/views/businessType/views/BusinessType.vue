@@ -1,6 +1,6 @@
 <template>
     <div style="height: 600px;">
-        <cp-view lang-url="queue.userType.columns" :fields-define="fieldsDefine"
+        <cp-view lang-url="queue.businessType.columns" :fields-define="fieldsDefine"
                       :show-columns="showFields" :form-show-columns="formShowFields"
                       :form-fields-define="formFieldsDefine" :actions="actions">
         </cp-view>
@@ -8,8 +8,8 @@
 </template>
 
 <script>
-    import CpView from "../components/CpUserType";
-    import cfg from '../cfg/userType.js';
+    import CpView from "../components/CpBusinessType";
+    import cfg from '../cfg/businessType.js';
 
     export default {
         components: {
