@@ -49,7 +49,7 @@
 
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI"; // API接口
-    import cfgMixin from "../../mixin/cfgMixin";
+    import cfgMixin from "../../../mixin/cfgMixin";
 
     export default {
         name: "CpEvaluateLabel",

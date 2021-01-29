@@ -32,7 +32,7 @@
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI";
     import CpBusinessTypeDialog from "./CpBusinessTypeDialog";
-    import cfgMixin from "../../mixin/cfgMixin";
+    import cfgMixin from "../../../mixin/cfgMixin";
 
 
     export default {

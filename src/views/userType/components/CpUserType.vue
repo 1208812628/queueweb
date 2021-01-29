@@ -1,9 +1,15 @@
 <template>
     <gwi-ui-list-page-container>
-        <gwi-ui-table-view :columns-define="fieldsDefine" :show-columns="showColumns" ref="Table"
-                           lang-url="queue.userType.columns" :column-res="fieldsI18nRes" :dict-res="dictI18nRes"
-                           @link-click="linkClick" :api-handle="query"
-                           :datas.sync="tableData" :params.sync="searchInfo" has-filter>
+        <gwi-ui-table-view ref="Table"
+                           :columns-define="fieldsDefine"
+                           :show-columns="showColumns"
+                           :column-res="fieldsI18nRes"
+                           :dict-res="dictI18nRes"
+                           @link-click="linkClick"
+                           :api-handle="query"
+                           :datas.sync="tableData"
+                           :params.sync="searchInfo"
+                           has-filter>
             <el-form slot="filter" :inline="true" :model="searchInfo" size="small">
                 <el-button size="small" type="primary" icon="el-icon-plus" @click="toAdd" style="margin-right: 20px">
                     新增
@@ -67,7 +73,7 @@
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI"; // API接口
     import {regular} from "@gwi/bi-common";
-    import cfgMixin from '../../mixin/cfgMixin';
+    import cfgMixin from '../../../mixin/cfgMixin';
 
     export default {
         mixins: [cfgMixin],
@@ -185,7 +191,7 @@
                         this.toModify(rowData.id)
                 }
             },
-            search(){
+            search() {
                 this.$refs.Table.refresh();
             },
             // 点击查询按钮

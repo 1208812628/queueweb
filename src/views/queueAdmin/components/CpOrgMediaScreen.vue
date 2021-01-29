@@ -2,20 +2,20 @@
     <gwi-ui-list-page-container>
         <gwi-ui-table-view :columns-define="fieldsDefine"
                            :show-columns="showColumns"
-                           lang-url="queue.userType.columns"
                            :column-res="fieldsI18nRes"
                            :dict-res="dictI18nRes"
                            :api-handle="query"
                            :datas.sync="tableData"
-                           :params.sync="searchInfo"
-                           has-filter>
-            <el-form slot="filter" :inline="true" size="small">
-                <el-button size="mini" type="primary" icon="el-icon-plus" @click="addHandle" plain style="margin-right:50px;">
-                    {{$t('queue.common.button.add')}}</el-button>
-            </el-form>
+                           :has-filter="false"
+                           ref="Table">
+            <div slot="filter" >
+                <el-button size="mini" type="primary" @click="toAdd" icon="el-icon-plus" plain>
+                    {{$t('queue.common.button.add')}}
+                </el-button>
+            </div>
             <template slot-scope="scope" slot="tableAction">
                 <gwi-ui-dropButton-group :actions="actions" :row-data="scope.row"
-                                         @action-click="actionClick" lang-url="queue.userType.actions">
+                                         @action-click="actionClick" lang-url="queue.orgMediaScreen.actions">
                 </gwi-ui-dropButton-group>
             </template>
         </gwi-ui-table-view>
@@ -99,54 +99,13 @@
 
         </el-dialog>
     </gwi-ui-list-page-container>
-
-
-    <div>
-        <div class="bottom-container">
-            <div class="main-bottom">
-                <div class="btn-container">
-                    <el-button size="mini" type="primary" @click="toAdd" icon="el-icon-plus" plain>
-                        {{$t('queue.common.button.add')}}
-                    </el-button>
-                </div>
-                <div class="table-container">
-                    <el-table :data="tableData" border size="mini" :empty-text="emptyText" @row-dblclick="rowDblclick" v-loading="dataListLoading">
-                        <el-table-column type="index" :label="$t('queue.common.label.serialNumber')" :index="tableIndex" align="center" width="50"/>
-                        <el-table-column prop="mediaScreenName" :label="$t('queue.queue.label.mediaScreenName')" min-width="150"/>
-                        <el-table-column prop="mediaScreenContext" :label="$t('queue.queue.label.mediaScreenContext')" min-width="600"/>
-                        <el-table-column prop="mediaScreenEnable" :label="$t('queue.queue.label.enableState')" :formatter="formatterEnable" width="100"/>
-                        <el-table-column width="150" :label="$t('queue.common.label.operation')">
-                            <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="toDetail(scope.row)">{{$t('queue.common.button.detail')}}
-                                </el-button>
-                                <el-button type="text" size="small" @click="toModify(scope.row.id)">{{$t('queue.common.button.edit')}}
-                                </el-button>
-                                <el-button type="text" size="small" @click="del(scope.row, scope.$index)">{{$t('queue.common.button.delete')}}
-                                </el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </div>
-                <div class="pagination-container">
-                    <el-pagination background layout="total, prev, pager, next, jumper"
-                                   :page-size="pageInfo.pageSize"
-                                   :total="pageInfo.total"
-                                   :current-page="pageInfo.pageNum"
-                                   @current-change="currentChange">
-                    </el-pagination>
-                </div>
-            </div>
-        </div>
-
-
-    </div>
 </template>
 
 <script>
     import {mediaScreenAPI} from "../../../api/modules/mediaScreenAPI";
     import topic from "../../../api/modules/topic";
     import SelectAssetDialog from "./selectAssetDialog";
-    import cfgMixin from '../../mixin/cfgMixin';
+    import cfgMixin from '../../../mixin/cfgMixin';
 
     export default {
         name: "mediaScreenMange",
@@ -155,13 +114,6 @@
             return {
                 emptyText: this.$t('queue.common.list.dataNull'),
                 tableData: [],// 列表的数据
-                dataListLoading: false,
-                pageInfo: {
-                    pageNum: 1,
-                    start: 0,
-                    pageSize: 10,
-                    total: 0
-                },
                 languages: [],
                 selectedRules: [{
                     language: "",
@@ -187,22 +139,37 @@
         watch: {
             orgId(val) {
                 if (val) {
-                    this.pageInfo.orgId = val;
-                    this.queryMediaScreenList();
+                    this.search();
                 }
             }
         },
         created() {
-            this.pageInfo.orgId = this.orgId;
             this.request(topic.businessUserTopic + "/dict/listDictItem", {"typeCode": "languageCode"}, "post").then(data => {
                 this.languages = data.context;
-            })
-            this.queryMediaScreenList();
+            });
         },
         components: {
             SelectAssetDialog
         },
         methods: {
+            search() {
+                this.$refs.Table.refresh();
+            },
+
+            query() {
+                return new Promise((resolve, reject) => {
+                    let param = {
+                        "orgId":this.orgId
+                    };
+                    this.requestVO(param, mediaScreenAPI.queryMediaScreenListPage).then(data => {
+                        resolve(data.context)
+                    }).catch(body => {
+                        this.$msgInfoErrorCaller(body.stateMsg);
+                        reject(body.stateMsg)
+                    })
+                })
+            },
+
             selectToAsset() {
                 this.selectAssetVisible = true;
                 this.$nextTick(() => {
@@ -233,34 +200,6 @@
                 this.selectedRules[index].context = val;
                 console.log("===============" + this.selectedRules[index].context);
                 // this.$forceUpdate();
-            },
-
-            // 查询媒体多媒体大屏列表
-            queryMediaScreenList() {
-                this.dataListLoading = true;
-                this.requestVO(this.pageInfo, mediaScreenAPI.queryMediaScreenListPage).then(data => {
-                    let context = data.context;
-                    this.tableData = context.list;
-                    this.pageInfo.total = context.total;
-                    this.dataListLoading = false;
-                }).catch(body => {
-                    this.dataListLoading = false;
-                    this.$msgInfoErrorCaller(body.stateMsg);
-                })
-            },
-
-            // 翻页
-            currentChange(val) {
-                console.log('当前页:', val);
-                this.pageInfo.pageNum = val;
-                this.queryMediaScreenList();
-            },
-
-            // 数据表序号
-            tableIndex(index) {
-                let page = this.pageInfo.pageNum;
-                let limit = this.pageInfo.pageSize;
-                return (page - 1) * limit + index + 1;
             },
 
             // 关闭弹出框
@@ -363,8 +302,7 @@
                             language: "",
                             context: ""
                         }];
-                        this.queryMediaScreenList();
-                        this.pageInfo.page = 1;
+                        this.search();
                         this.hideLoading();
                     }).catch(body => {
                         this.hideLoading();
@@ -373,23 +311,20 @@
                 }
             },
 
-            // 编辑多媒体大屏
-            toModify(id) {
-                this.dialogUpdateFlag = true;
-                this.dialogTitle = this.$t('queue.queue.title.edit_mediaScreen');
-                this.isDetail = false;
-                this.getData(id)
-            },
-
-            //查看多媒体大屏详情
-            toDetail(row) {
-                this.dialogTitle = this.$t('queue.queue.title.detail_mediaScreen');
-                this.isDetail = true;
-                this.getData(row.id)
-            },
-
-            rowDblclick(v) {
-                this.toDetail(v);
+            actionClick({command, rowData}) {
+                switch (command) {
+                    case 'view':
+                        this.toDetail(rowData);
+                        break;
+                    case 'edit':
+                        this.toModify(rowData.id);
+                        break;
+                    case 'delete':
+                        this.toDelete(rowData,2);
+                        break;
+                    default:
+                        this.toDetail(rowData)
+                }
             },
 
             getData(id) {
@@ -400,6 +335,21 @@
                 }).catch(body => {
                     this.$msgInfoErrorCaller(body.stateMsg);
                 })
+            },
+
+            //查看多媒体大屏详情
+            toDetail(row) {
+                this.dialogTitle = this.$t('queue.queue.title.detail_mediaScreen');
+                this.isDetail = true;
+                this.getData(row.id)
+            },
+
+            // 编辑多媒体大屏
+            toModify(id) {
+                this.dialogUpdateFlag = true;
+                this.dialogTitle = this.$t('queue.queue.title.edit_mediaScreen');
+                this.isDetail = false;
+                this.getData(id)
             },
 
             // 刪除多媒体大屏
@@ -415,15 +365,7 @@
                             type: 'success',
                             message: this.$t('queue.common.msg.delete_success')
                         });
-                        this.queryMediaScreenList();
-                        if (this.pageInfo.pageNum !== 1) {
-                            // 删除的是某页的第一条数据
-                            let tmp = (index + 1) % this.pageInfo.pageSize;
-                            if (tmp === 1) {
-                                this.pageInfo.pageNum--;
-                            }
-                        }
-                        this.queryMediaScreenList();
+                        this.search();
                     }).catch(body => {
                         this.$msgInfoErrorCaller(body.stateMsg);
                     })
@@ -439,11 +381,6 @@
 </script>
 
 <style scoped lang="scss">
-    .main-top {
-        margin: 0;
-        border-bottom: #F2F6FC solid 1px;
-    }
-
     .gwi-dialog {
         .el-dialog__title {
             color: #fff;

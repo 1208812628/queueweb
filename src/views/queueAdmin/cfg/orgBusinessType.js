@@ -1,13 +1,17 @@
+import {ENABLE_MAP} from "../../../dict";
+
 const TABLE_COLUMNS_DEFINE = {
     orgBusinessName: {field: 'orgBusinessName'},
     orgBusinessNameList: {field: 'orgBusinessNameList'},
     initialLetter:{field:'initialLetter'},
     numberLength: {field: 'numberLength'},
-    customerTypeShow: {field: 'customerTypeShow'}
+    customerTypeShow: {field: 'customerTypeShow'},
+    enableTime:{field:'enableTime'},
+    enableFlag:{field:'enableFlag',dictResUrl:'queue.dict.enable', dict:ENABLE_MAP},
 };
 
 const DEFAULT_SHOW_COLUMN = ['orgBusinessName', 'orgBusinessNameList', 'initialLetter', 'numberLength',
-    'customerTypeShow'];
+    'customerTypeShow','enableTime','enableFlag'];
 
 const FORM_COLUMNS_DEFINE = {
     factorCode: {field: 'factorCode', editType:'text', required:true},
@@ -20,8 +24,8 @@ const FORM_COLUMNS_DEFINE = {
 const DEFAULT_FORM_SHOW_COLUMN = ['factorCode', 'factorName', 'numberPrefix', 'priority', 'overTime'];
 
 const Table_Actions = [
-    {key:'edit', lang:'queue.userType.actions.edit.name', icon:'el-icon-edit'},
-    {key:'delete', lang:'queue.userType.actions.delete.name', icon:'el-icon-delete'},
+    {key:'edit', lang:'queue.actions.actions.edit.name', icon:'el-icon-edit'},
+    {key:'delete', lang:'queue.actions.actions.delete.name', icon:'el-icon-delete'},
 ];
 
 const CONFIG_MENU_ACTIONS = [

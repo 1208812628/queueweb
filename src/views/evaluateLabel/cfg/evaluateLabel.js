@@ -1,6 +1,8 @@
+import {SATISFIED_MAP} from "../../../dict";
+
 const TABLE_COLUMNS_DEFINE = {
     labelName: {field: 'labelName'},
-    labelClassify: {field: 'labelClassify'},
+    labelClassify: {field: 'labelClassify',dictResUrl:'queue.dict.satisfied', dict:SATISFIED_MAP},
 };
 
 const DEFAULT_SHOW_COLUMN = ['labelName', 'labelClassify'];

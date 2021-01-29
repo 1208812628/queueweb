@@ -1,47 +1,37 @@
 <template>
-    <div>
-        <div class="bottom-container">
-            <div class="main-bottom">
-                <div class="btn-container">
-                    <el-button size="mini" type="primary" @click="toAdd" icon="el-icon-plus" plain>{{$t('queue.common.button.add')}}</el-button>
-                </div>
-                <div class="table-container">
-                    <el-table :data="tableData" border size="mini" :empty-text="emptyText" @row-dblclick="rowDblclick" v-loading="dataListLoading">
-                        <!-- <el-table-column type="index" label="序号" :index="tableIndex" align="center" width="50"/>-->
-                        <el-table-column prop="windowCode" :label="$t('queue.queue.label.windowCode')" width="120" align="center"/>
-                        <el-table-column prop="windowBusinessList" :label="$t('queue.queue.label.windowBusinessList')" :formatter="formatterContext" width="500"/>
-                        <el-table-column prop="windowLocation" :label="$t('queue.queue.label.windowLocation')" width="120"/>
-                        <el-table-column prop="windowScreenList" :label="$t('queue.queue.label.windowScreenList')" width="130" :formatter="formatterScreen"/>
-                        <el-table-column :label="$t('queue.common.label.operation')" width="180">
-                            <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="toDetail(scope.row)">{{$t('queue.common.button.detail')}}</el-button>
-                                <el-button type="text" size="small" @click="toModify(scope.row.id)">{{$t('queue.common.button.edit')}}</el-button>
-                                <el-button type="text" size="small" @click="toCopy(scope.row.id)">{{$t('queue.common.button.copy')}}</el-button>
-                                <el-button type="text" size="small" @click="del(scope.row, scope.$index)">{{$t('queue.common.button.delete')}}</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </div>
-                <div class="pagination-container">
-                    <el-pagination background layout="total, prev, pager, next,jumper"
-                                   :page-size="pageInfo.pageSize"
-                                   :total="pageInfo.total"
-                                   :current-page="pageInfo.pageNum"
-                                   @current-change="currentChange">
-                    </el-pagination>
-                </div>
+    <gwi-ui-list-page-container>
+
+        <gwi-ui-table-view :columns-define="fieldsDefine"
+                           :show-columns="showColumns"
+                           :column-res="fieldsI18nRes"
+                           :dict-res="dictI18nRes"
+                           :api-handle="query"
+                           :datas.sync="tableData"
+                           :has-filter="false"
+                           ref="Table">
+            <div slot="filter" >
+                <el-button size="mini" type="primary" @click="toAdd" icon="el-icon-plus" plain>
+                    {{$t('queue.common.button.add')}}
+                </el-button>
             </div>
-        </div>
+            <template slot-scope="scope" slot="tableAction">
+                <gwi-ui-dropButton-group :actions="actions" :row-data="scope.row"
+                                         @action-click="actionClick" lang-url="queue.actions.actions">
+                </gwi-ui-dropButton-group>
+            </template>
+        </gwi-ui-table-view>
 
         <!-- 添加修改 -->
         <el-dialog v-el-drag-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" width="600px"
-                   @close="dialogClose" class="gwi-dialog" center :append-to-body="true" :close-on-click-modal="isDetail"
-                    top="15px">
+                   @close="dialogClose" class="gwi-dialog" center :append-to-body="true"
+                   :close-on-click-modal="isDetail"
+                   top="15px">
             <el-form :inline="false" :model="dialogFormInfo" ref="dialogFormInfo"
                      :status-icon="true" :inline-message="true" label-position="right" label-width="140px"
                      size="mini" class="dialog-form" :rules="rule">
                 <el-form-item :label="$t('queue.queue.label.windowCode')" prop="windowCode">
-                    <el-input-number v-model="dialogFormInfo.windowCode" size="mini" :min="1" :max="9999" :disabled="isDetail"/>
+                    <el-input-number v-model="dialogFormInfo.windowCode" size="mini" :min="1" :max="10"
+                                     :disabled="isDetail"/>
                 </el-form-item>
                 <el-form-item :label="$t('queue.queue.label.windowScreenList')">
                     <el-select v-model="selectedScreen" :disabled="isDetail" multiple>
@@ -65,13 +55,14 @@
                                   border size="mini"
                                   :empty-text="emptyText"
                                   tooltip-effect="dark"
-								  class="window-table">
+                                  class="window-table">
                             <el-table-column prop="selected" width="55" :label="$t('queue.queue.label.change')">
                                 <template slot-scope="scope">
                                     <el-checkbox v-model="scope.row.selected"></el-checkbox>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="businessName" :label="$t('queue.queue.label.businessName')"></el-table-column>
+                            <el-table-column prop="businessName"
+                                             :label="$t('queue.queue.label.businessName')"></el-table-column>
                             <el-table-column :label="$t('queue.queue.label.priority')" width="200">
                                 <template slot-scope="scope">
                                     <el-input-number v-model="scope.row.priority"
@@ -90,37 +81,43 @@
                 </el-form-item>
             </el-form>
             <div class="dialog-footer" slot="footer">
-                <el-button @click="cancelDialog">{{$t('queue.common.button.cancel')}}</el-button>
+                <el-button @click="dialogClose">{{$t('queue.common.button.cancel')}}</el-button>
                 <el-button @click="submitDialog('dialogFormInfo')" type="primary" v-if="!isDetail">
-                    {{$t('queue.common.button.submit')}}</el-button>
+                    {{$t('queue.common.button.submit')}}
+                </el-button>
             </div>
         </el-dialog>
-    </div>
+    </gwi-ui-list-page-container>
 </template>
 
 <script>
     import {windowAPI} from "../../../api/modules/windowAPI";
     import {mediaScreenAPI} from "../../../api/modules/mediaScreenAPI";
     import {queueManageAPI} from "../../../api/modules/queueManageAPI";
+    import cfgMixin from '../../../mixin/cfgMixin';
 
     export default {
         name: "WindowMange",
+        props: {
+            orgId: {},
+            showColumns: {},
+            formFieldsDefine: {},
+            formShowColumns: {},
+            actions: {},
+        },
+        mixins: [cfgMixin],
         data() {
             return {
                 emptyText: this.$t('queue.common.list.dataNull'),// 列表loading效果
                 tableData: [],// 列表的数据
-                dataListLoading: false,
                 mediaScreenList: [],// 多媒体大屏列表
-                // 列表分页
-                pageInfo: {
-                    pageNum: 1,
-                    start: 0,
-                    pageSize: 10,
-                    total: 0
-                },
                 rule: {
                     windowCode: [
-                        {required: true, message: this.$t('queue.queue.msg.validate_window_windowCode'), trigger: 'blur'}, // 非空验证
+                        {
+                            required: true,
+                            message: this.$t('queue.queue.msg.validate_window_windowCode'),
+                            trigger: 'blur'
+                        }, // 非空验证
                     ],
                     windowLocation: [
                         {
@@ -139,21 +136,14 @@
                 dialogTitle: ''// 弹出窗口的标题
             }
         },
-        props: [
-            'orgId'
-        ],
         watch: {
             orgId(val) {
                 if (val) {
-                    this.pageInfo.orgId = val;
-                    this.queryWindowList();
+                    this.search();
                 }
             }
         },
         created() {
-            this.pageInfo.orgId = this.orgId;
-            // 查询窗口列表
-            this.queryWindowList();
             // 查询可办业务列表
             this.listOrgBusinessType();
             // 查询媒体大屏列表
@@ -161,9 +151,29 @@
         },
 
         methods: {
+            query(){
+                let param = {
+                    "orgId":this.orgId
+                };
+                return new Promise((resolve, reject) => {
+                    this.requestVO(param, windowAPI.queryWindowListPage).then(data => {
+                        resolve(data.context);
+                    }).catch(body => {
+                        this.$msgInfoErrorCaller(body.stateMsg);
+                        reject(body.stateMsg);
+                    })
+                })
+
+            },
+            search(){
+                this.$refs.Table.refresh();
+            },
             // 查询媒体大屏列表
             getMediaScreenList() {
-                this.requestVO({mediaScreenEnable: 1, orgId: this.orgId}, mediaScreenAPI.getMediaScreenList).then(data => {
+                this.requestVO({
+                    mediaScreenEnable: 1,
+                    orgId: this.orgId
+                }, mediaScreenAPI.getMediaScreenList).then(data => {
                     this.hideLoading();
                     this.mediaScreenList = data.context;
                 }).catch(body => {
@@ -173,7 +183,11 @@
 
             //查询可办业务列表
             listOrgBusinessType() {
-                this.requestVO({enableFlag: "1", isShow: "1", orgId: this.orgId}, queueManageAPI.listOrgBusinessType).then(data => {
+                this.requestVO({
+                    enableFlag: "1",
+                    isShow: "1",
+                    orgId: this.orgId
+                }, queueManageAPI.listOrgBusinessType).then(data => {
                         if (null != data.context) {
                             var temp = data.context;
                             for (var i = 0; i < temp.length; i++) {
@@ -190,21 +204,6 @@
                         }
                     }
                 ).catch(body => {
-                    this.$msgInfoErrorCaller(body.stateMsg);
-                })
-            },
-
-            // 查询窗口列表
-            queryWindowList() {
-                this.dataListLoading = true;
-                this.requestVO(this.pageInfo, windowAPI.queryWindowListPage).then(data => {
-                    this.dataListLoading = false;
-                    this.tableData = data.context.list;
-                    this.pageInfo.total = data.context.total;
-                    this.hideLoading();
-                }).catch(body => {
-                    this.dataListLoading = false;
-                    this.hideLoading();
                     this.$msgInfoErrorCaller(body.stateMsg);
                 })
             },
@@ -236,31 +235,8 @@
                 return str;
             },
 
-            // 翻页
-            currentChange(val) {
-                console.log('当前页:', val);
-                this.pageInfo.pageNum = val;
-                this.queryWindowList();
-            },
-
-            // 数据表序号
-            tableIndex(index) {
-                let page = this.pageInfo.pageNum;
-                let limit = this.pageInfo.pageSize;
-                return (page - 1) * limit + index + 1;
-            },
-
             // 关闭弹出框
             dialogClose() {
-                this.dialogFormInfo = {};
-                this.dialogFormVisible = false;
-                this.selectedBusiness = [];
-                this.selectedScreen = [];
-                this.listOrgBusinessType();
-            },
-
-            // 关闭弹出框
-            cancelDialog() {
                 this.dialogFormInfo = {};
                 this.dialogFormVisible = false;
                 this.selectedBusiness = [];
@@ -320,11 +296,8 @@
                                 this.selectedBusiness = [];
                                 this.selectedScreen = [];
                                 this.dialogFormVisible = false;
-                                this.queryWindowList();
-                                this.pageInfo.page = 1;
-                                this.hideLoading();
+                                this.search();
                             }).catch(body => {
-                                this.hideLoading();
                                 this.$msgInfoErrorCaller(body.stateMsg);
                             })
                         }
@@ -340,11 +313,30 @@
                 this.isDetail = false;
                 this.dialogUpdateFlag = false;
                 this.dialogFormVisible = true;
-                this.dialogTitle =  this.$t('queue.queue.title.add_window');;
+                this.dialogTitle = this.$t('queue.queue.title.add_window');
                 this.dialogFormInfo = {
                     orgId: this.orgId,
                     windowCode: "",
                     windowLocation: ""
+                }
+            },
+
+            actionClick({command, rowData}) {
+                switch (command) {
+                    case 'view':
+                        this.toDetail(rowData);
+                        break;
+                    case 'edit':
+                        this.toModify(rowData.id);
+                        break;
+                    case 'copy':
+                        this.toCopy(rowData.id);
+                        break;
+                    case 'delete':
+                        this.toDelete(rowData);
+                        break;
+                    default:
+                        this.toDetail(rowData)
                 }
             },
 
@@ -370,15 +362,11 @@
                 this.getData(row.id)
             },
 
-            rowDblclick(v) {
-                this.toDetail(v);
-            },
-
             getData(id) {
                 this.dialogFormVisible = true;
                 this.requestVO({id: id}, windowAPI.getWindowList).then(data => {
                     this.dialogFormInfo = data.context[0];
-                    if(!this.dialogUpdateFlag){
+                    if (!this.dialogUpdateFlag) {
                         this.dialogFormInfo.id = "";
                         this.dialogFormInfo.orgId = this.orgId;
                         this.dialogFormInfo.windowCode = "";
@@ -403,9 +391,9 @@
             },
 
             // 刪除窗口
-            del(row, index) {
+            toDelete(row) {
                 console.log("要删除:", row);
-                this.$confirm(this.$t('queue.queue.msg.delete_window_confirm'), this.$t('queue.common.title.delete'),  {
+                this.$confirm(this.$t('queue.queue.msg.delete_window_confirm'), this.$t('queue.common.title.delete'), {
                     confirmButtonText: this.$t('queue.common.button.confirm'),
                     cancelButtonText: this.$t('queue.common.button.cancel'),
                     type: 'warning'
@@ -415,15 +403,7 @@
                             type: 'success',
                             message: this.$t('queue.common.msg.delete_success')
                         });
-                        this.queryWindowList();
-                        if (this.pageInfo.pageNum !== 1) {
-                            // 删除的是某页的第一条数据
-                            let tmp = (index + 1) % this.pageInfo.pageSize;
-                            if (tmp === 1) {
-                                this.pageInfo.pageNum--;
-                            }
-                        }
-                        this.queryWindowList();
+                        this.search();
                     }).catch(body => {
                         this.$msgInfoErrorCaller(body.stateMsg);
                     })
@@ -439,32 +419,4 @@
 </script>
 
 <style scoped lang="scss">
-    .main-top {
-        margin: 0;
-        border-bottom: #F2F6FC solid 1px;
-    }
-
-    .gwi-dialog {
-        .el-dialog__title {
-            color: #fff;
-        }
-
-        .el-input--mini {
-            width: 80%;
-        }
-
-        .el-select--mini {
-            width: 80%;
-        }
-
-        .el-textarea {
-            width: 80%;
-        }
-    }
-	.window-table{
-		height:260px;overflow-y: auto;
-	}
-	.el-table::before{
-		z-index: 0;
-	}
 </style>

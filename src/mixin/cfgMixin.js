@@ -51,13 +51,14 @@ export default {
                     dictI18n[key] = {};
                     dictDefine.forEach((value, dictKey) => {
                         dictI18n[key][dictKey] = this.$t(`${dictResUrl}.${value.key}.name`);
+                        console.log(this.$t(`${dictResUrl}.${value.key}.name`),"lie222");
                     });
                 }
             });
             return dictI18n;    
         },
         fieldsI18nRes () {
-            let i18nColumnResourse = {}; 
+            let i18nColumnResourse = {};
             if (this.langUrl) {
                 i18nColumnResourse = this.generateFieldsLang(this.fieldsDefine, this.langUrl);
             }

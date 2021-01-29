@@ -43,7 +43,7 @@
 <script>
     import {queueManageAPI} from "../../../api/modules/queueManageAPI"; // API接口
     import store from "@/store"
-    import cfgMixin from "../../mixin/cfgMixin";
+    import cfgMixin from "../../../mixin/cfgMixin";
 
     export default {
         name: "CpDispatchLog",
